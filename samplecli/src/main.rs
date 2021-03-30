@@ -2,6 +2,7 @@ use clap::Clap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::stdin;
 
 #[derive(Clap, Debug)]
 #[clap(
@@ -24,12 +25,17 @@ fn main(){
     if let Some(path) = opts.formula_file {
         let f = File::open(path).unwrap();
         let reader = BufReader::new(f);
-
-        for line in reader.lines(){
-            let line = line.unwrap();
-            println!("{}", line);
-        }
+        read_file(reader, opts.verbose);
     }else{
-        println!("No file is specified");
+        let stdin = stdin();
+        let reader = stdin.lock();
+        read_file(reader, opts.verbose);
+    }
+}
+
+fn read_file<R:BufRead>(reader:R, verbose:bool){
+    for line in reader.lines(){
+        let line = line.unwrap();
+        println!("{}", line);
     }
 }
