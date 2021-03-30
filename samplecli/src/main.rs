@@ -27,8 +27,7 @@ impl RpnCalculator{
     }
     pub fn eval(&self, formula:&str) -> i32{
         let mut tokens = formula.split_whitespace().rev().collect::<Vec<_>>();
-        self.eval_inner(&mut tokens);
-        0
+        return self.eval_inner(&mut tokens);
     }
     fn eval_inner(&self, tokens:&mut Vec<&str>) -> i32{
         let mut stack = Vec::new();
@@ -81,5 +80,25 @@ fn read_input<R:BufRead>(reader:R, verbose:bool){
         let line = line.unwrap();
         let answer = calc.eval(&line);
         println!("{}", answer);
+    }
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+    #[test]
+    fn test_ok(){
+        let calc = RpnCalculator::new(false);
+        assert_eq!(calc.eval("5"), 5);
+        assert_eq!(calc.eval("2 3 +"), 5);
+        assert_eq!(calc.eval("2 3 *"), 6);
+        assert_eq!(calc.eval("2 3 -"), -1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_ng(){
+        let calc = RpnCalculator::new(false);
+        calc.eval("1 1 ^");
     }
 }
